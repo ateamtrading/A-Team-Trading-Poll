@@ -1,11 +1,34 @@
-const WEB_APP_URL = https://script.google.com/macros/s/AKfycbxHvXXSovhCxrgS6YDSWpukWRH5bjp4xM3fHBU8uK1nIwcIVY2odcDxr2NT15mBH8TPTw/exec;
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxHvXXSovhCxrgS6YDSWpukWRH5bjp4xM3fHBU8uK1nIwcIVY2odcDxr2NT15mBH8TPTw/exec";
+
+function getESTDate() {
+  const now = new Date();
+  const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+  const estOffset = 300; // EST = UTC-5
+  return new Date(utc - estOffset * 60000);
+}
+
+function syncToFiveMinuteInterval(callback) {
+  const now = getESTDate();
+  const minutes = now.getMinutes();
+  const seconds = now.getSeconds();
+  const ms = now.getMilliseconds();
+
+  const nextRefreshIn = ((5 - (minutes % 5)) * 60 - seconds) * 1000 - ms;
+
+  setTimeout(() => {
+    callback(); // Fetch new data
+    syncToFiveMinuteInterval(callback); // Set up next refresh
+  }, nextRefreshIn);
+}
 
 async function fetchSignal() {
   try {
     const res = await fetch(`${WEB_APP_URL}?action=getSignal`);
     const { signal } = await res.json();
-    document.getElementById('signal').textContent = signal;
-  } catch {
+    const signalDisplay = document.getElementById('signal');
+    signalDisplay.textContent = signal;
+    signalDisplay.style.color = signal === 'BUY' ? 'green' : signal === 'SELL' ? 'red' : 'black';
+  } catch (err) {
     document.getElementById('signal').textContent = 'ERROR';
   }
 }
@@ -28,8 +51,9 @@ async function sendVote(vote) {
   }
 }
 
-document.getElementById('buyBtn').onclick  = () => sendVote('BUY');
+document.getElementById('buyBtn').onclick = () => sendVote('BUY');
 document.getElementById('sellBtn').onclick = () => sendVote('SELL');
 
-setInterval(fetchSignal, 5000);
+// Initial fetch + timed updates synced to 5-minute intervals (EST)
 fetchSignal();
+syncToFiveMinuteInterval(fetchSignal);
