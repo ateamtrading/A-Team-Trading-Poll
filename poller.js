@@ -1,4 +1,4 @@
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzmABVY31I26JzttlEmQ_AGTA9ToX3R3mIz38D1U0dwDSWAlEM49ex1HBXaqayWYi3Fxw/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyt1qsaHLaFKKVOgiSJz58EjmyaRQ7hMuKn8VNWeF4O5-bTGQoaGJEfkOrH0rUczNX3jw/exec";
 
 function getESTDate() {
   const now = new Date();
