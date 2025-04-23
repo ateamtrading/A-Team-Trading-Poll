@@ -1,4 +1,4 @@
-const WEB_APP_URL = 'https://script.google.com/macros/s/…/exec';
+const WEB_APP_URL = https://script.google.com/macros/s/AKfycbxHvXXSovhCxrgS6YDSWpukWRH5bjp4xM3fHBU8uK1nIwcIVY2odcDxr2NT15mBH8TPTw/exec;
 
 async function fetchSignal() {
   try {
