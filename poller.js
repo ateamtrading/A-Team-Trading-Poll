@@ -1,23 +1,35 @@
-function pollAndStore() {
-  // 1) YouTube poll result (as before)
-  const ytSignal = fetchResult(latestPollId());
-  
-  // 2) Web votes from PropertiesService
-  const props = PropertiesService.getDocumentProperties();
-  let counts = JSON.parse(props.getProperty('votes') || '{"BUY":0,"SELL":0}');
-  // reset for next interval
-  props.setProperty('votes', '{"BUY":0,"SELL":0}');
+const WEB_APP_URL = 'https://script.google.com/macros/s/…/exec';
 
-  // Combine totals
-  const totalVotes = counts.BUY + counts.SELL;
-  let finalSignal = 'NEUTRAL';
-  if (totalVotes > 0) {
-    const ratio = counts.BUY / totalVotes;
-    if      (ratio > 0.5) finalSignal = 'BUY';
-    else if (ratio < 0.5) finalSignal = 'SELL';
+async function fetchSignal() {
+  try {
+    const res = await fetch(`${WEB_APP_URL}?action=getSignal`);
+    const { signal } = await res.json();
+    document.getElementById('signal').textContent = signal;
+  } catch {
+    document.getElementById('signal').textContent = 'ERROR';
   }
-  
-  // (Optional) weight YouTube poll + web votes differently here
-  PropertiesService.getDocumentProperties()
-    .setProperty('lastSignal', finalSignal);
 }
+
+async function sendVote(vote) {
+  try {
+    const res = await fetch(WEB_APP_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'castVote', vote }),
+      headers: { 'Content-Type': 'application/json' }
+    });
+    const { status } = await res.json();
+    if (status === 'OK') {
+      alert(`Your ${vote} vote was recorded!`);
+    } else {
+      alert('Vote failed.');
+    }
+  } catch {
+    alert('Network error.');
+  }
+}
+
+document.getElementById('buyBtn').onclick  = () => sendVote('BUY');
+document.getElementById('sellBtn').onclick = () => sendVote('SELL');
+
+setInterval(fetchSignal, 5000);
+fetchSignal();
