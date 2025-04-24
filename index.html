@@ -3,71 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Community Trade Signal</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 50px;
-    }
-    h1 {
-      font-size: 2.5rem;
-    }
-    button {
-      margin: 10px;
-      padding: 10px 20px;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-  </style>
+  <title>Trade Signal App</title>
 </head>
 <body>
-  <img src="favicon.png" alt="icon" width="24" />
-  <h2><strong>Community Trade Signal</strong></h2>
-  <h1 id="signal">Loading signal...</h1>
-  <button id="voteBuy">Vote BUY</button>
-  <button id="voteSell">Vote SELL</button>
+  <h1>Trading Signal</h1>
+  <button onclick="getSignal()">Get Signal</button>
+  <p id="output"></p>
 
-  <script>
-    const backendUrl = "https://script.google.com/macros/s/AKfycbwzXpFWRt2nPtChSOTuirNms176nZfb7Hj9oj8FOJgqWmth2633BapVPrMJGIAAkyEPDg/exec";
-
-    // Fetch the signal on page load
-    fetch(backendUrl)
-      .then(response => response.json())
-      .then(data => {
-        console.log("Fetched signal:", data);
-        document.getElementById("signal").innerText = data.signal || "No signal available";
-      })
-      .catch(error => {
-        console.error("Error fetching signal:", error);
-        document.getElementById("signal").innerText = "Error fetching signal";
-      });
-
-    // Send a vote to the backend
-    async function sendVote(vote) {
-      try {
-        const response = await fetch(backendUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            action: "castVote",
-            vote: vote
-          })
-        });
-
-        const result = await response.text();
-        console.log("Vote response:", result);
-        alert("Vote submitted: " + vote);
-      } catch (err) {
-        console.error("Failed to send vote:", err);
-        alert("Error sending vote.");
-      }
-    }
-
-    document.getElementById("voteBuy").onclick = () => sendVote("BUY");
-    document.getElementById("voteSell").onclick = () => sendVote("SELL");
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
