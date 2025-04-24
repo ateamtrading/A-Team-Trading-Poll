@@ -1,59 +1,74 @@
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxMLtU1aUNngVwZl9YkcLeiTYl7szZy-DVqC0bB3MJoFcP7N585L4y19sa1TJNX0QbA_w/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwIDNDQLHNvLpbay4RnKNnzbwPjlV00-lFwHnwl-8fZcUjgxi3uFC75XoB92k9tDoSHVQ/exec";
 
+// Get current EST time
 function getESTDate() {
   const now = new Date();
-  const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-  const estOffset = 300; // EST = UTC-5
-  return new Date(utc - estOffset * 60000);
+  const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+  const estOffset = 5 * 60 * 60000; // EST is UTC-5
+  return new Date(utc - estOffset);
 }
 
+// Sync fetch to 5-minute intervals
 function syncToFiveMinuteInterval(callback) {
   const now = getESTDate();
   const minutes = now.getMinutes();
   const seconds = now.getSeconds();
   const ms = now.getMilliseconds();
 
-  const nextRefreshIn = ((5 - (minutes % 5)) * 60 - seconds) * 1000 - ms;
+  const msUntilNextRefresh = ((5 - (minutes % 5)) * 60 - seconds) * 1000 - ms;
 
   setTimeout(() => {
-    callback(); // Fetch new data
-    syncToFiveMinuteInterval(callback); // Set up next refresh
-  }, nextRefreshIn);
+    callback();
+    syncToFiveMinuteInterval(callback);
+  }, msUntilNextRefresh);
 }
 
+// Fetch the current signal from backend
 async function fetchSignal() {
   try {
     const res = await fetch(`${WEB_APP_URL}?action=getSignal`);
-    const { signal } = await res.json();
-    const signalDisplay = document.getElementById('signal');
-    signalDisplay.textContent = signal;
-    signalDisplay.style.color = signal === 'BUY' ? 'green' : signal === 'SELL' ? 'red' : 'black';
+    const data = await res.json();
+    const signalDisplay = document.getElementById("signal");
+
+    if (data.signal) {
+      signalDisplay.textContent = data.signal;
+      signalDisplay.style.color = data.signal === "BUY" ? "green" :
+                                  data.signal === "SELL" ? "red" : "black";
+    } else {
+      signalDisplay.textContent = "NO SIGNAL";
+    }
   } catch (err) {
-    document.getElementById('signal').textContent = 'ERROR';
+    console.error("Fetch error:", err);
+    document.getElementById("signal").textContent = "ERROR";
   }
 }
 
+// Send a vote to the backend
 async function sendVote(vote) {
   try {
     const res = await fetch(WEB_APP_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'castVote', vote }),
-      headers: { 'Content-Type': 'application/json' }
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "castVote", vote })
     });
-    const { status } = await res.json();
-    if (status === 'OK') {
+
+    const data = await res.json();
+    if (data.status === "OK") {
       alert(`Your ${vote} vote was recorded!`);
     } else {
-      alert('Vote failed.');
+      alert("Vote failed: " + data.status);
     }
-  } catch {
-    alert('Network error.');
+  } catch (err) {
+    console.error("Vote error:", err);
+    alert("Network error");
   }
 }
 
-document.getElementById('buyBtn').onclick = () => sendVote('BUY');
-document.getElementById('sellBtn').onclick = () => sendVote('SELL');
+// Hook up buttons after DOM is ready
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("buyBtn").onclick = () => sendVote("BUY");
+  document.getElementById("sellBtn").onclick = () => sendVote("SELL");
 
-// Initial fetch + timed updates synced to 5-minute intervals (EST)
-fetchSignal();
-syncToFiveMinuteInterval(fetchSignal);
+  fetchSignal();
+  syncToFiveMinuteInterval(fetchSignal);
+});
