@@ -1,4 +1,4 @@
-const backendUrl = "https://script.google.com/macros/s/AKfycbxt5KFe-ABy2iG6YTfDqODRjCYrQWQkTqS349E5nx-yFysxAzGk_k58wdXny28Um6nzYg/exec";
+const backendUrl = "https://script.google.com/macros/s/AKfycbx3C1Q_5QiY-erFmwe9WLOjnZkgqyj5yDhj7F0AXlFsmrGREy0Iyuj1rBgPZkvDc9XUZA/exec";
 
 // Fetch the signal on page load
 fetch(backendUrl)
