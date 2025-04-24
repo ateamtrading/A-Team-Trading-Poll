@@ -1,4 +1,4 @@
-const backendURL = "https://script.google.com/macros/s/AKfycbxldZh66iaRY24aWUrWqL9kRwCXI8KDprv4uJf8Rv90n4llbhAVui11FSyLOXpJ4lb0hA/exec";
+const backendURL = "https://script.google.com/macros/s/AKfycbzmTzG_PzWHn39DYYLj7sCy7_Lmex2eLuRiKIjr5XEKYCRDwwQBTIyWmgbvglHcBfF8Gg/exec";
 
 function getSignal() {
   fetch(backendURL)
