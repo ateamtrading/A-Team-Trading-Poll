@@ -1,4 +1,4 @@
-const WEB_APP_URL = "const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwrdTLbLODoqd27O3tPIfkNwec3jl4eGzYC-WQxU31WI1p2YGpLPVPutSWqrttYE_zQ1g/exec";
+const WEB_APP_URL = "const WEB_APP_URL = "http://script.google.com/macros/s/AKfycbwrdTLbLODoqd27O3tPIfkNwec3jl4eGzYC-WQxU31WI1p2YGpLPVPutSWqrttYE_zQ1g/exec";
 
 // 🕐 Get current EST time
 function getESTDate() {
