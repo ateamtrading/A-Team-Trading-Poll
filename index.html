@@ -1,15 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Trading Signal</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 2rem; }
+    #login, #polling { margin-bottom: 1rem; }
+    #polling { display: none; }
+  </style>
 </head>
 <body>
   <h1>Trading Signal</h1>
-  <button onclick="getSignal()">Get Signal</button>
-  <p id="signal"></p>
 
-  <script src="poller.js"></script>
+  <div id="login">
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <p id="login-error" style="color:red;"></p>
+  </div>
+
+  <div id="polling">
+    <button onclick="vote('buy')">Buy</button>
+    <button onclick="vote('sell')">Sell</button>
+    <p id="status">Waiting for signal...</p>
+  </div>
+
+  <script>
+    const backendURL = 'YOUR_GOOGLE_APPS_SCRIPT_URL';
+
+    function login() {
+      const user = document.getElementById('username').value;
+      const pass = document.getElementById('password').value;
+      if (user === 'ateamtrading778' && pass === 'ateamtrading778') {
+        document.getElementById('login').style.display = 'none';
+        document.getElementById('polling').style.display = 'block';
+      } else {
+        document.getElementById('login-error').textContent = 'Invalid credentials';
+      }
+    }
+
+    function vote(type) {
+      fetch(backendURL, {
+        method: 'POST',
+        body: JSON.stringify({ vote: type }),
+        headers: { 'Content-Type': 'application/json' }
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('status').textContent = `Signal: ${data.signal}`;
+      })
+      .catch(() => {
+        document.getElementById('status').textContent = 'Error sending vote';
+      });
+    }
+
+    function getSignal() {
+      fetch(backendURL)
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById('status').textContent = `Signal: ${data.signal}`;
+        });
+    }
+
+    setInterval(getSignal, 300000); // Check every 5 minutes
+  </script>
 </body>
 </html>
