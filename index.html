@@ -1,29 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Live Trade Signal</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Community Trade Signal</title>
   <style>
-    body { font-family: sans-serif; text-align: center; padding: 2rem; }
-    #signal { font-size: 4rem; margin-top: 1rem; }
-    .vote-btn {
-      font-size: 1.5rem;
-      padding: 0.5rem 1.5rem;
-      margin: 0.5rem;
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 50px;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    #signal {
+      font-size: 32px;
+      font-weight: bold;
+      margin: 20px 0;
+    }
+    button {
+      font-size: 18px;
+      padding: 10px 20px;
+      margin: 10px;
       cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <h1>📈 Community Trade Signal</h1>
-  <div id="signal">Loading…</div>
 
-  <div>
-    <button id="buyBtn" class="vote-btn">Vote BUY</button>
-    <button id="sellBtn" class="vote-btn">Vote SELL</button>
-  </div>
+  <h1>📈 Community Trade Signal</h1>
+  <div id="signal">Loading...</div>
+  <button id="voteBuy">Vote BUY</button>
+  <button id="voteSell">Vote SELL</button>
 
   <script src="poller.js"></script>
+
 </body>
 </html>
