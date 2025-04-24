@@ -1,8 +1,16 @@
 const backendUrl = "https://script.google.com/macros/s/AKfycbwzXpFWRt2nPtChSOTuirNms176nZfb7Hj9oj8FOJgqWmth2633BapVPrMJGIAAkyEPDg/exec";
 
+// Display loading message initially
+document.getElementById("signal").innerText = "Loading...";
+
 // Fetch the signal on page load
 fetch(backendUrl)
-  .then(response => response.json())
+  .then(response => {
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+    return response.json();
+  })
   .then(data => {
     console.log("Fetched signal:", data);
     document.getElementById("signal").innerText = data.signal;
@@ -26,6 +34,10 @@ async function sendVote(vote) {
       })
     });
 
+    if (!response.ok) {
+      throw new Error("Vote request failed");
+    }
+
     const result = await response.text();
     console.log("Vote response:", result);
     alert("Vote submitted: " + vote);
@@ -35,5 +47,6 @@ async function sendVote(vote) {
   }
 }
 
+// Hook up buttons to voting function
 document.getElementById("voteBuy").onclick = () => sendVote("BUY");
 document.getElementById("voteSell").onclick = () => sendVote("SELL");
