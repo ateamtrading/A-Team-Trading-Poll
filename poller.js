@@ -4,25 +4,10 @@ function getSignal() {
   fetch(backendURL)
     .then(response => response.json())
     .then(data => {
-      document.getElementById("output").textContent = `Signal: ${data.signal}`;
+      document.getElementById("signal").textContent = `Signal: ${data.signal}`;
     })
-    .catch(error => {
-      console.error("Error fetching signal:", error);
-      document.getElementById("output").textContent = "Error fetching signal";
+    .catch(err => {
+      document.getElementById("signal").textContent = "Error fetching signal";
+      console.error("Error:", err);
     });
 }
-
-// Example POST (not used on button, just for demo/test)
-function sendPost() {
-  fetch(backendURL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ test: "data" })
-  })
-    .then(response => response.json())
-    .then(data => console.log("POST response:", data))
-    .catch(err => console.error("POST error:", err));
-}
-
