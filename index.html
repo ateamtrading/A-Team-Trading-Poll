@@ -47,7 +47,7 @@
 <div class="container" id="loginBox">
   <h2>Trading Signal</h2>
   <input type="password" id="password" placeholder="Password">
-  <button onclick="login()">Login</button>
+  <button id="loginButton">Login</button>
 </div>
 
 <div id="trading" class="container">
@@ -59,8 +59,10 @@
 
 <script>
   const correctPassword = "ateamtrading778"; // your password
-  
-  function login() {
+
+  document.getElementById("loginButton").addEventListener("click", function(event) {
+    event.preventDefault(); // <<< THIS IS CRITICAL
+
     const password = document.getElementById("password").value;
     if (password === correctPassword) {
       alert("Login successful!");
@@ -70,7 +72,7 @@
     } else {
       alert("Incorrect password.");
     }
-  }
+  });
 
   function sendVote(vote) {
     document.getElementById("status").textContent = "Sending vote...";
@@ -95,4 +97,3 @@
 
 </body>
 </html>
-
