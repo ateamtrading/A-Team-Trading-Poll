@@ -13,12 +13,18 @@
     <button onclick="login()">Login</button>
   </div>
 
-  <div id="app" style="display:none;">
-    <h1>Trading Signal</h1>
-    <button onclick="sendVote('buy')">Buy</button>
-    <button onclick="sendVote('sell')">Sell</button>
-    <div id="signal-display">Loading signal...</div>
-  </div>
+<div id="app" style="display:none;">
+  <h1>Trading Signal</h1>
+  <button onclick="sendVote('buy')">Buy</button>
+  <button onclick="sendVote('sell')">Sell</button>
+
+  <!-- Spinner shows while loading -->
+  <div id="spinner" style="display: none;">⏳</div>
+
+  <!-- Signal text -->
+  <div id="signal-display">Loading signal...</div>
+</div>
+
 
   <script>
     const PASSWORD = "ateamtrading778";
