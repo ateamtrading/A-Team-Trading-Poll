@@ -9,6 +9,7 @@
       font-family: Arial, sans-serif;
       text-align: center;
       margin-top: 50px;
+      position: relative;
     }
     .container {
       background: white;
@@ -34,18 +35,21 @@
       background-color: #ddd;
     }
     #overlay {
+      display: none; /* hidden by default */
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
       background: rgba(0,0,0,0.6);
-      z-index: 1;
+      z-index: 0; /* lower than .container */
     }
   </style>
 </head>
 <body>
 
+<!-- MOVE OVERLAY UP -->
 <div id="overlay"></div>
 
+<!-- NOW LOGIN FORM -->
 <div class="container" id="loginBox">
   <h2>Trading Signal</h2>
   <input type="password" id="password" placeholder="Password">
@@ -63,18 +67,20 @@
   const correctPassword = "ateamtrading778";
 
   document.getElementById("loginButton").addEventListener("click", function(event) {
-    event.preventDefault(); // prevent form from submitting
+    event.preventDefault(); // prevent page refresh
 
     const password = document.getElementById("password").value;
     if (password === correctPassword) {
       alert("Login successful!");
 
-      // Hide login elements
+      // Hide login box
       document.getElementById("loginBox").style.display = "none";
-      document.getElementById("overlay").style.display = "none";
 
-      // Show trading section
+      // Show trading buttons
       document.getElementById("trading").style.display = "inline-block";
+
+      // Make sure overlay is hidden
+      document.getElementById("overlay").style.display = "none";
     } else {
       alert("Incorrect password.");
     }
@@ -103,3 +109,4 @@
 
 </body>
 </html>
+
