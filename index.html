@@ -2,73 +2,97 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Trading Signal</title>
   <style>
-    body, html {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      font-family: Arial, sans-serif;
-      cursor: default; /* <<< THIS FIXES THE FUZZY CURSOR */
+    body {
       background-color: #f4f6f8;
-      display: flex;
-      justify-content: center;
-      align-items: start;
-      padding-top: 50px;
-    }
-
-    .container {
+      font-family: Arial, sans-serif;
       text-align: center;
+      margin-top: 50px;
+    }
+    .container {
       background: white;
-      padding: 40px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      border-radius: 10px;
+      display: inline-block;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
     }
-
-    input[type="password"] {
-      padding: 8px;
-      margin: 10px 5px 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+    #trading {
+      display: none;
     }
-
     button {
-      padding: 8px 16px;
-      background-color: #007bff;
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 5px;
       border: none;
-      color: white;
-      border-radius: 4px;
       cursor: pointer;
-      font-size: 14px;
     }
-
     button:hover {
-      background-color: #0056b3;
+      background-color: #ddd;
+    }
+    #overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      z-index: 999;
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <h2>Trading Signal</h2>
-    <input type="password" id="password" placeholder="Password">
-    <button onclick="handleLogin()">Login</button>
-  </div>
+<div id="overlay"></div>
 
-  <script>
-    function handleLogin() {
-      const passwordInput = document.getElementById('password').value;
-      const correctPassword = "ateamtrading778"; // Set your password here
+<div class="container" id="loginBox">
+  <h2>Trading Signal</h2>
+  <input type="password" id="password" placeholder="Password">
+  <button onclick="login()">Login</button>
+</div>
 
-      if (passwordInput === correctPassword) {
-        alert("Login successful!");
-        // Redirect or show trading options here
-      } else {
-        alert("Incorrect password.");
-      }
+<div id="trading" class="container">
+  <h2>Trading Signal</h2>
+  <button onclick="sendVote('buy')">Buy</button>
+  <button onclick="sendVote('sell')">Sell</button>
+  <p id="status"></p>
+</div>
+
+<script>
+  const correctPassword = "ateamtrading778"; // your password
+  
+  function login() {
+    const password = document.getElementById("password").value;
+    if (password === correctPassword) {
+      alert("Login successful!");
+      document.getElementById("loginBox").style.display = "none";
+      document.getElementById("overlay").style.display = "none";
+      document.getElementById("trading").style.display = "inline-block";
+    } else {
+      alert("Incorrect password.");
     }
-  </script>
+  }
+
+  function sendVote(vote) {
+    document.getElementById("status").textContent = "Sending vote...";
+    fetch('https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec', {
+      method: 'POST',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ vote: vote })
+    })
+    .then(response => response.text())
+    .then(data => {
+      document.getElementById("status").textContent = "Vote sent!";
+    })
+    .catch(error => {
+      document.getElementById("status").textContent = "Error sending vote.";
+      console.error('Error:', error);
+    });
+  }
+</script>
 
 </body>
 </html>
+
