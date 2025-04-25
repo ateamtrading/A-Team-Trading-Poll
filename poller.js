@@ -34,17 +34,28 @@ function sendVote(vote) {
   });
 }
 
-function fetchSignal() {
-  fetch(BACKEND_URL)
-    .then(response => {
-      if (!response.ok) throw new Error('Network error');
-      return response.json();
-    })
-    .then(data => {
-      document.getElementById('signal-status').textContent = `Current Signal: ${data.signal}`;
-    })
-    .catch(error => {
-      console.error('Error fetching signal:', error);
-      document.getElementById('signal-status').textContent = 'Error checking signal.';
+async function fetchSignal() {
+  const signalDisplay = document.getElementById('signal-display');
+
+  try {
+    // Show loading message while waiting
+    signalDisplay.innerText = 'Loading...';
+
+    const response = await fetch(MACRO_URL, {
+      method: 'GET',
+      mode: 'cors',
     });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    const signalData = await response.json();
+
+    signalDisplay.innerText = signalData.signal || 'No signal';
+  } catch (error) {
+    console.error('Error checking signal:', error);
+    signalDisplay.innerText = 'Error checking signal.';
+  }
 }
+
