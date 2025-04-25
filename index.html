@@ -1,78 +1,106 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Trading Poll</title>
-  <link rel="stylesheet" href="style.css">
-  <meta http-equiv="Content-Security-Policy" content="connect-src 'self' https://script.google.com;">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+  <style>
+    body {
+      text-align: center;
+      margin-top: 50px;
+    }
+    #buy {
+      background-color: #007bff;
+      color: white;
+      margin-right: 10px;
+    }
+    #sell {
+      background-color: #dc3545;
+      color: white;
+    }
+    #login-box {
+      margin-bottom: 20px;
+    }
+    #signal {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 1.5em;
+    }
+    #errorbox {
+      color: red;
+      margin-top: 10px;
+    }
+  </style>
 </head>
 <body>
+
+  <h1>Trading Signal</h1>
+
   <div id="login-box">
-    <h2>Login</h2>
     <input type="password" id="password" placeholder="Enter Password">
-    <div id="errorbox" style="color:red"></div>
+    <br><br>
     <button onclick="login()">Login</button>
+    <div id="errorbox"></div>
   </div>
 
-  <div id="app" style="display:none;">
-    <h1>Trading Signal</h1>
-    <button onclick="sendVote('buy')">Buy</button>
-    <button onclick="sendVote('sell')">Sell</button>
-    <div id="signal-display">Loading signal...</div>
+  <div id="vote-buttons" style="display: none;">
+    <button id="buy" onclick="sendVote('buy')">Buy</button>
+    <button id="sell" onclick="sendVote('sell')">Sell</button>
+    <div id="signal">Loading signal...</div>
   </div>
 
-  <script>
-    const PASSWORD = "ateamtrading778";
-    const MACRO_URL = "https://script.google.com/macros/s/AKfycbxldZh66iaRY24aWUrWqL9kRwCXI8KDprv4uJf8Rv90n4llbhAVui11FSyLOXpJ4lb0hA/exec"
+<script>
+const PASSWORD = 'ateamtrading778';
+const MACRO_URL = 'https://script.google.com/macros/s/AKfycbxldZh66iaRY24aWUrWqL9kRwCXI8KDprv4uJf8Rv90n4llbhAVui11FSyLOXpJ4lb0hA/exec';
 
-    function login() {
-      const entered = document.getElementById('password').value;
-      if (entered === PASSWORD) {
-        document.getElementById('login-box').style.display = 'none';
-        document.getElementById('app').style.display = 'block';
-        fetchSignal(); // Load signal on login
-        setInterval(fetchSignal, 5 * 60 * 1000); // Refresh signal every 5 minutes
-      } else {
-        document.getElementById('errorbox').innerText = 'Incorrect password';
-      }
-    }
+function login() {
+  const entered = document.getElementById('password').value;
+  if (entered === PASSWORD) {
+    document.getElementById('login-box').style.display = 'none';
+    document.getElementById('vote-buttons').style.display = 'block';
+    fetchSignal(); // Fetch immediately on login
+    setInterval(fetchSignal, 5 * 60 * 1000); // Refresh every 5 minutes
+  } else {
+    document.getElementById('errorbox').innerText = 'Incorrect password!';
+  }
+}
 
-    async function sendVote(vote) {
+function sendVote(vote) {
+  fetch(MACRO_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ vote: vote })
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('Vote sent:', data);
+    fetchSignal(); // Refresh signal after voting
+  })
+  .catch(error => console.error('Error sending vote:', error));
+}
+
+function fetchSignal() {
+  fetch(MACRO_URL)
+    .then(response => response.text())
+    .then(text => {
       try {
-        await fetch(MACRO_URL, {
-          method: 'POST',
-          mode: 'no-cors', 
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ vote })
-        });
-        console.log('Vote sent:', vote);
-      } catch (error) {
-        console.error('Error sending vote:', error);
-      }
-    }
-
-    async function fetchSignal() {
-      try {
-        const response = await fetch(MACRO_URL, {
-          method: 'GET',
-          mode: 'no-cors'
-        });
-        const text = await response.text();
-        let signalData;
-        try {
-          signalData = JSON.parse(text);
-        } catch (err) {
-          console.error('Error parsing signal response:', err);
-          document.getElementById('signal-display').innerText = 'Error checking signal.';
-          return;
+        const data = JSON.parse(text);
+        if (data && data.signal) {
+          document.getElementById('signal').innerText = 'Current Signal: ' + data.signal;
+        } else {
+          document.getElementById('signal').innerText = 'Current Signal: no signal';
         }
-        document.getElementById('signal-display').innerText = signalData.signal || 'No signal';
-      } catch (error) {
-        console.error('Error fetching signal:', error);
-        document.getElementById('signal-display').innerText = 'Error checking signal.';
+      } catch (e) {
+        console.error('Error parsing signal response:', e);
+        document.getElementById('signal').innerText = 'Current Signal: no signal';
       }
-    }
-  </script>
+    })
+    .catch(error => {
+      console.error('Error fetching signal:', error);
+      document.getElementById('signal').innerText = 'Current Signal: no signal';
+    });
+}
+</script>
+
 </body>
 </html>
