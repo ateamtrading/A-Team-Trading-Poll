@@ -1,28 +1,79 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Trading Signal</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Trading Poll</title>
+  <style>
+    #app { display: none; }
+    #login-box { margin-top: 20px; }
+  </style>
 </head>
 <body>
+  <h2>Trading Signal</h2>
+
   <div id="login-box">
-    <h2>Enter Password</h2>
-    <input type="password" id="password" placeholder="Password" />
-    <button onclick="checkPassword()">Login</button>
-    <p id="login-error" style="color: red;"></p>
+    <input type="password" id="password" placeholder="Enter Password" />
+    <button onclick="login()">Login</button>
+    <div id="errorbox" style="color:red;"></div>
   </div>
 
-  <div id="app" style="display:none;">
-    <div class="card">
-      <h2>Trading Signal</h2>
-      <button onclick="sendVote('buy')">Buy</button>
-      <button onclick="sendVote('sell')">Sell</button>
-      <p id="signal-status">Checking signal...</p>
-    </div>
+  <div id="app">
+    <button onclick="sendVote('buy')">Buy</button>
+    <button onclick="sendVote('sell')">Sell</button>
+    <p id="signal-display">Loading signal...</p>
   </div>
 
-  <script src="poller.js"></script>
+  <script>
+    const PASSWORD = "ateamtrading778";
+    const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxldZh66iaRY24aWUrWqL9kRwCXI8KDprv4uJf8Rv90n4llbhAVui11FSyLOXpJ4lb0hA/exec'
+
+    function login() {
+      const entered = document.getElementById('password').value;
+      const errorbox = document.getElementById('errorbox');
+
+      if (entered === PASSWORD) {
+        document.getElementById('login-box').style.display = 'none';
+        document.getElementById('app').style.display = 'block';
+        fetchSignal(); // Initial call
+        setInterval(fetchSignal, 5 * 60 * 1000); // Refresh every 5 minutes
+      } else {
+        errorbox.textContent = 'Incorrect password.';
+      }
+    }
+
+    function sendVote(vote) {
+      fetch(BACKEND_URL, {
+        method: 'POST',
+        mode: 'cors', // Make sure this is here
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ vote })
+      })
+      .then(response => {
+        if (!response.ok) throw new Error("Network error");
+        return response.json();
+      })
+      .then(data => console.log("Vote sent:", data))
+      .catch(err => console.error("Error sending vote:", err));
+    }
+
+    function fetchSignal() {
+      fetch(BACKEND_URL, {
+        method: 'GET',
+        mode: 'cors' // CORS mode for Apps Script
+      })
+      .then(response => {
+        if (!response.ok) throw new Error("Network error");
+        return response.json();
+      })
+      .then(data => {
+        document.getElementById('signal-display').textContent = `Current signal: ${data.signal}`;
+      })
+      .catch(err => {
+        console.error("Error fetching signal:", err);
+        document.getElementById('signal-display').textContent = "Error checking signal.";
+      });
+    }
+  </script>
 </body>
 </html>
