@@ -1,4 +1,4 @@
-const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxldZh66iaRY24aWUrWqL9kRwCXI8KDprv4uJf8Rv90n4llbhAVui11FSyLOXpJ4lb0hA/exec';
+const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbz3ipLRJo_YnahRCbhvOlXvpe_oovMIDztGEKVL24gC78j2HFrycL9NYoc2yBd_mUNDaw/exec';
 const PASSWORD = 'ateamtrading778'; // Set your password
 
 function checkPassword() {
